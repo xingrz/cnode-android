@@ -1,0 +1,37 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.0.1"
+
+    defaultConfig {
+        applicationId "org.cnodejs"
+        minSdkVersion 16
+        targetSdkVersion 21
+        versionCode 10000
+        versionName "1.0.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    // to use Material Design on API <= 21, so ignore these warnings
+    //noinspection GradleDynamicVersion,GradleDependency
+    compile 'com.android.support:appcompat-v7:21.0.+'
+    //noinspection GradleDynamicVersion
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+    //noinspection GradleDynamicVersion
+    compile 'com.android.support:cardview-v7:21.0.+'
+
+    // API requesting and JSON parsing
+    compile 'com.mcxiaoke.volley:library:1.0.6'
+    compile 'com.google.code.gson:gson:2.3'
+
+    // image loading
+    compile 'com.squareup.picasso:picasso:2.3.4'
+}
