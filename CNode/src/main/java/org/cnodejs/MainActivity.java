@@ -15,14 +15,19 @@ import com.android.volley.toolbox.Volley;
 
 import org.cnodejs.api.Constants;
 import org.cnodejs.api.GsonRequest;
+import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
 
-public class MainActivity extends ActionBarActivity {
+
+public class MainActivity extends ActionBarActivity implements
+        SwipeRefreshLayout.OnRefreshListener,
+        TopicListAdapter.OnItemClickListener {
 
     private static final String TAG = "MainActivity";
 
     private SwipeRefreshLayout swipingLayout;
-    private RecyclerView topicsView;
+
+    private TopicListAdapter topicsAdapter;
 
     private RequestQueue queue;
 
@@ -43,18 +48,22 @@ public class MainActivity extends ActionBarActivity {
 
     private void setupSwipingLayout() {
         swipingLayout = (SwipeRefreshLayout) findViewById(R.id.swiping);
+        swipingLayout.setOnRefreshListener(this);
     }
 
     private void setupTopicsView() {
-        topicsView = (RecyclerView) findViewById(R.id.topics);
+        topicsAdapter = new TopicListAdapter(this, this);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+
+        RecyclerView topicsView = (RecyclerView) findViewById(R.id.topics);
         topicsView.setLayoutManager(layoutManager);
+        topicsView.setHasFixedSize(true);
+        topicsView.setAdapter(topicsAdapter);
     }
 
     private void loadTopics() {
         swipingLayout.setRefreshing(true);
-
         queue.add(new GsonRequest<TopicList>(
                 Request.Method.GET, Constants.API_V1 + "/topics", TopicList.class,
                 new Response.Listener<TopicList>() {
@@ -62,6 +71,7 @@ public class MainActivity extends ActionBarActivity {
                     public void onResponse(TopicList response) {
                         Log.d(TAG, "loaded " + response.size() + " topics");
                         swipingLayout.setRefreshing(false);
+                        topicsAdapter.setTopics(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -72,6 +82,16 @@ public class MainActivity extends ActionBarActivity {
                     }
                 }
         ));
+    }
+
+    @Override
+    public void onRefresh() {
+        loadTopics();
+    }
+
+    @Override
+    public void onItemClick(Topic item) {
+
     }
 
 }
