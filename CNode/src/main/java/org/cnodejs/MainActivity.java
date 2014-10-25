@@ -1,11 +1,13 @@
 package org.cnodejs;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -19,10 +21,8 @@ import org.cnodejs.api.GsonRequest;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
 
-
 public class MainActivity extends ActionBarActivity implements
-        SwipeRefreshLayout.OnRefreshListener,
-        TopicListAdapter.OnItemClickListener {
+        SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "MainActivity";
 
@@ -53,14 +53,16 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setupTopicsView() {
-        topicsAdapter = new TopicListAdapter(this, this);
+        topicsAdapter = new TopicListAdapter(this);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
-        RecyclerView topicsView = (RecyclerView) findViewById(R.id.topics);
-        topicsView.setLayoutManager(layoutManager);
-        topicsView.setHasFixedSize(true);
+        ListView topicsView = (ListView) findViewById(R.id.topics);
         topicsView.setAdapter(topicsAdapter);
+        topicsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                openTopic(topicsAdapter.getItem(position));
+            }
+        });
     }
 
     private void loadTopics() {
@@ -72,7 +74,8 @@ public class MainActivity extends ActionBarActivity implements
                     public void onResponse(TopicList response) {
                         Log.d(TAG, "loaded " + response.data.size() + " topics");
                         swipingLayout.setRefreshing(false);
-                        topicsAdapter.setTopics(response.data);
+                        topicsAdapter.clear();
+                        topicsAdapter.addAll(response.data);
                     }
                 },
                 new Response.ErrorListener() {
@@ -94,9 +97,14 @@ public class MainActivity extends ActionBarActivity implements
         loadTopics();
     }
 
-    @Override
-    public void onItemClick(Topic item) {
-
+    private void openTopic(Topic topic) {
+        Intent intent = new Intent(this, TopicActivity.class);
+        intent.putExtra("id", topic.id);
+        intent.putExtra("title", topic.title);
+        intent.putExtra("content", topic.content);
+        intent.putExtra("user", topic.author.loginname);
+        intent.putExtra("avatar", topic.author.avatarUrl);
+        startActivity(intent);
     }
 
 }

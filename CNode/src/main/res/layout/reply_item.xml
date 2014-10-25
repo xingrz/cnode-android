@@ -10,7 +10,7 @@
         android:layout_margin="16dp" />
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -20,19 +20,17 @@
         android:layout_toRightOf="@+id/avatar"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textSize="16sp" />
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/user"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/title"
+        android:layout_below="@+id/user"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_toEndOf="@+id/avatar"
-        android:layout_toRightOf="@+id/avatar"
-        android:ellipsize="end"
-        android:singleLine="true" />
+        android:layout_toRightOf="@+id/avatar" />
 
 </RelativeLayout>
