@@ -5,17 +5,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
@@ -23,8 +20,6 @@ import com.android.volley.toolbox.Volley;
 import org.cnodejs.api.Constants;
 import org.cnodejs.api.GsonRequest;
 import org.cnodejs.api.model.TopicContent;
-import org.cnodejs.util.ImageLoader;
-import org.cnodejs.util.Markdown;
 
 public class TopicActivity extends ActionBarActivity {
 
@@ -32,41 +27,30 @@ public class TopicActivity extends ActionBarActivity {
 
     private TopicRepliesAdapter repliesAdapter;
 
-    private String id;
-    private String title;
-    private String content;
-    private String user;
-    private String avatar;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        id = intent.getStringExtra("id");
-        title = intent.getStringExtra("title");
-        content = intent.getStringExtra("content");
-        user = intent.getStringExtra("user");
-        avatar = intent.getStringExtra("avatar");
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(title);
+        actionBar.setDisplayShowTitleEnabled(false);
 
         setContentView(R.layout.activity_topic);
 
-        ListView repliesView = (ListView) findViewById(R.id.replies);
-        addHeaderViewTo(repliesView);
-
         repliesAdapter = new TopicRepliesAdapter(this);
+
+        RecyclerView repliesView = (RecyclerView) findViewById(R.id.replies);
+        repliesView.setLayoutManager(new LinearLayoutManager(this));
         repliesView.setAdapter(repliesAdapter);
+
+        String id = getIntent().getStringExtra("id");
 
         Volley.newRequestQueue(this).add(new GsonRequest<TopicContent>(
                 Request.Method.GET, Constants.API_V1 + "/topic/" + id, TopicContent.class,
                 new Response.Listener<TopicContent>() {
                     @Override
                     public void onResponse(TopicContent response) {
-                        repliesAdapter.addAll(response.data.replies);
+                        repliesAdapter.setTopic(response.data);
                     }
                 },
                 new Response.ErrorListener() {
@@ -80,17 +64,6 @@ public class TopicActivity extends ActionBarActivity {
                     }
                 }
         ));
-    }
-
-    private void addHeaderViewTo(ListView repliesView) {
-        View topicHeaderView = getLayoutInflater().inflate(R.layout.topic_header, repliesView, false);
-
-        ((TextView) topicHeaderView.findViewById(R.id.user)).setText(user);
-        ((TextView) topicHeaderView.findViewById(R.id.title)).setText(title);
-        Markdown.render((TextView) topicHeaderView.findViewById(R.id.content), content);
-        ImageLoader.load((ImageView) topicHeaderView.findViewById(R.id.avatar), avatar);
-
-        repliesView.addHeaderView(topicHeaderView, null, false);
     }
 
     @Override
@@ -114,7 +87,8 @@ public class TopicActivity extends ActionBarActivity {
     }
 
     private void openInBrowser() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.BASE + "/topic/" + id));
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(Constants.BASE + "/topic/" + getIntent().getStringExtra("id")));
         startActivity(intent);
     }
 
