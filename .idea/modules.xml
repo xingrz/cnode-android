@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/CNode/CNode.iml" filepath="$PROJECT_DIR$/CNode/CNode.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cnode-android.iml" filepath="$PROJECT_DIR$/cnode-android.iml" />
+    </modules>
+  </component>
+</project>
+
