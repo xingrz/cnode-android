@@ -22,6 +22,7 @@ import org.cnodejs.api.Constants;
 import org.cnodejs.api.GsonRequest;
 import org.cnodejs.api.model.TopicContent;
 import org.cnodejs.util.ImageLoader;
+import org.cnodejs.util.Markdown;
 
 public class TopicActivity extends ActionBarActivity {
 
@@ -58,7 +59,7 @@ public class TopicActivity extends ActionBarActivity {
 
         ((TextView) topicHeaderView.findViewById(R.id.user)).setText(intent.getStringExtra("user"));
         ((TextView) topicHeaderView.findViewById(R.id.title)).setText(intent.getStringExtra("title"));
-        ((TextView) topicHeaderView.findViewById(R.id.content)).setText(intent.getStringExtra("content"));
+        Markdown.render((TextView) topicHeaderView.findViewById(R.id.content), intent.getStringExtra("content"));
         ImageLoader.load((ImageView) topicHeaderView.findViewById(R.id.avatar), intent.getStringExtra("avatar"));
 
         repliesView.addHeaderView(topicHeaderView, null, false);

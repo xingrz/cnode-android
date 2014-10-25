@@ -30,4 +30,7 @@ dependencies {
 
     // image loading
     compile 'com.squareup.picasso:picasso:2.3.4'
+
+    // markdown rendering
+    compile 'org.markdownj:markdownj-core:0.4'
 }

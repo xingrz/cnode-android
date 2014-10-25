@@ -5,4 +5,6 @@
 
     <string name="error_loading">加载失败，请稍后再试。</string>
 
+    <string name="action_about">关于…</string>
+
 </resources>

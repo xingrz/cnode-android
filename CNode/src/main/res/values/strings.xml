@@ -7,4 +7,6 @@
 
     <string name="error_loading">Failed to load. Try again later.</string>
 
+    <string name="action_about">About…</string>
+
 </resources>

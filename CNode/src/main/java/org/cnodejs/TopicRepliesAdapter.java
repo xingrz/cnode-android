@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import org.cnodejs.api.model.Reply;
 import org.cnodejs.util.ImageLoader;
+import org.cnodejs.util.Markdown;
 import org.cnodejs.widget.ArrayAdapter;
 
 public class TopicRepliesAdapter extends ArrayAdapter<Reply, TopicRepliesAdapter.ViewHolder> {
@@ -39,8 +40,8 @@ public class TopicRepliesAdapter extends ArrayAdapter<Reply, TopicRepliesAdapter
         final Reply item = getItem(position);
 
         holder.user.setText(item.author.loginname);
-        holder.content.setText(item.content);
 
+        Markdown.render(holder.content, item.content);
         ImageLoader.load(holder.avatar, item.author.avatarUrl);
     }
 
