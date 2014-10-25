@@ -1,10 +1,13 @@
 package org.cnodejs;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -105,6 +108,28 @@ public class MainActivity extends ActionBarActivity implements
         intent.putExtra("user", topic.author.loginname);
         intent.putExtra("avatar", topic.author.avatarUrl);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.about:
+                openAbout();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openAbout() {
+        String homepage = "https://github.com/xingrz/cnode-android";
+        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(homepage)));
     }
 
 }
