@@ -1,10 +1,12 @@
 package org.cnodejs;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,15 +32,26 @@ public class TopicActivity extends ActionBarActivity {
 
     private TopicRepliesAdapter repliesAdapter;
 
-    private RequestQueue queue;
+    private String id;
+    private String title;
+    private String content;
+    private String user;
+    private String avatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        id = intent.getStringExtra("id");
+        title = intent.getStringExtra("title");
+        content = intent.getStringExtra("content");
+        user = intent.getStringExtra("user");
+        avatar = intent.getStringExtra("avatar");
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setTitle(getIntent().getStringExtra("title"));
+        actionBar.setTitle(title);
 
         setContentView(R.layout.activity_topic);
 
@@ -48,25 +61,7 @@ public class TopicActivity extends ActionBarActivity {
         repliesAdapter = new TopicRepliesAdapter(this);
         repliesView.setAdapter(repliesAdapter);
 
-        queue = Volley.newRequestQueue(this);
-
-        loadReplies(getIntent().getStringExtra("id"));
-    }
-
-    private void addHeaderViewTo(ListView repliesView) {
-        Intent intent = getIntent();
-        View topicHeaderView = getLayoutInflater().inflate(R.layout.topic_header, repliesView, false);
-
-        ((TextView) topicHeaderView.findViewById(R.id.user)).setText(intent.getStringExtra("user"));
-        ((TextView) topicHeaderView.findViewById(R.id.title)).setText(intent.getStringExtra("title"));
-        Markdown.render((TextView) topicHeaderView.findViewById(R.id.content), intent.getStringExtra("content"));
-        ImageLoader.load((ImageView) topicHeaderView.findViewById(R.id.avatar), intent.getStringExtra("avatar"));
-
-        repliesView.addHeaderView(topicHeaderView, null, false);
-    }
-
-    private void loadReplies(String id) {
-        queue.add(new GsonRequest<TopicContent>(
+        Volley.newRequestQueue(this).add(new GsonRequest<TopicContent>(
                 Request.Method.GET, Constants.API_V1 + "/topic/" + id, TopicContent.class,
                 new Response.Listener<TopicContent>() {
                     @Override
@@ -87,15 +82,40 @@ public class TopicActivity extends ActionBarActivity {
         ));
     }
 
+    private void addHeaderViewTo(ListView repliesView) {
+        View topicHeaderView = getLayoutInflater().inflate(R.layout.topic_header, repliesView, false);
+
+        ((TextView) topicHeaderView.findViewById(R.id.user)).setText(user);
+        ((TextView) topicHeaderView.findViewById(R.id.title)).setText(title);
+        Markdown.render((TextView) topicHeaderView.findViewById(R.id.content), content);
+        ImageLoader.load((ImageView) topicHeaderView.findViewById(R.id.avatar), avatar);
+
+        repliesView.addHeaderView(topicHeaderView, null, false);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.topic, menu);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.open_in_browser:
+                openInBrowser();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void openInBrowser() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.BASE + "/topic/" + id));
+        startActivity(intent);
     }
 
 }
