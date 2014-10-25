@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import org.cnodejs.api.model.Topic;
-import org.cnodejs.api.model.TopicList;
+import org.cnodejs.util.ImageLoader;
+
+import java.util.List;
 
 public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.ViewHolder> {
 
@@ -32,14 +32,12 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
         public void onItemClick(Topic item);
     }
 
-    private final Context context;
     private final LayoutInflater inflater;
     private final OnItemClickListener listener;
 
-    private TopicList topics;
+    private List<Topic> topics;
 
     public TopicListAdapter(Context context, OnItemClickListener listener) {
-        this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
     }
@@ -56,7 +54,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
         holder.title.setText(item.title);
         holder.user.setText(item.author.loginname);
 
-        Picasso.with(context).load(item.author.avatarUrl).into(holder.avatar);
+        ImageLoader.load(holder.avatar, item.author.avatarUrl);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,7 +74,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
         return topics == null ? 0 : topics.size();
     }
 
-    public void setTopics(TopicList topics) {
+    public void setTopics(List<Topic> topics) {
         this.topics = topics;
         notifyDataSetChanged();
     }

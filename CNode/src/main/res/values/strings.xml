@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">CNode</string>
+    <string name="app_name" translatable="false">CNode</string>
+
+    <string name="loading">Loading…</string>
+
+    <string name="error_loading">Failed to load. Try again later.</string>
 
 </resources>

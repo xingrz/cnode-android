@@ -1,6 +1,9 @@
 package org.cnodejs.api.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
-public class TopicList extends ArrayList<Topic> {
+public class TopicList {
+
+    public List<Topic> data;
+
 }

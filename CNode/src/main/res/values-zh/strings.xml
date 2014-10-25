@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="loading">正在加载…</string>
+
+    <string name="error_loading">加载失败，请稍后再试。</string>
+
+</resources>

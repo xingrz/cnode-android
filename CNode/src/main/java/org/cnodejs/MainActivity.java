@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -69,9 +70,9 @@ public class MainActivity extends ActionBarActivity implements
                 new Response.Listener<TopicList>() {
                     @Override
                     public void onResponse(TopicList response) {
-                        Log.d(TAG, "loaded " + response.size() + " topics");
+                        Log.d(TAG, "loaded " + response.data.size() + " topics");
                         swipingLayout.setRefreshing(false);
-                        topicsAdapter.setTopics(response);
+                        topicsAdapter.setTopics(response.data);
                     }
                 },
                 new Response.ErrorListener() {
@@ -79,6 +80,10 @@ public class MainActivity extends ActionBarActivity implements
                     public void onErrorResponse(VolleyError error) {
                         Log.e(TAG, "error loading topics", error);
                         swipingLayout.setRefreshing(false);
+                        Toast.makeText(
+                                MainActivity.this,
+                                R.string.error_loading,
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
         ));
