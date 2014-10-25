@@ -11,9 +11,10 @@ android {
         versionCode 10000
         versionName "1.0.0"
     }
+
     buildTypes {
         release {
-            runProguard false
+            runProguard true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
