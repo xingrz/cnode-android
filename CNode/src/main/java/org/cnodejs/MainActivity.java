@@ -5,12 +5,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -56,16 +55,16 @@ public class MainActivity extends ActionBarActivity implements
     }
 
     private void setupTopicsView() {
-        topicsAdapter = new TopicListAdapter(this);
-
-        ListView topicsView = (ListView) findViewById(R.id.topics);
-        topicsView.setAdapter(topicsAdapter);
-        topicsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        topicsAdapter = new TopicListAdapter(this, new TopicListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openTopic(topicsAdapter.getItem(position));
+            public void onItemClick(Topic item) {
+                openTopic(item);
             }
         });
+
+        RecyclerView topicsView = (RecyclerView) findViewById(R.id.topics);
+        topicsView.setLayoutManager(new LinearLayoutManager(this));
+        topicsView.setAdapter(topicsAdapter);
     }
 
     private void loadTopics() {
@@ -77,8 +76,7 @@ public class MainActivity extends ActionBarActivity implements
                     public void onResponse(TopicList response) {
                         Log.d(TAG, "loaded " + response.data.size() + " topics");
                         swipingLayout.setRefreshing(false);
-                        topicsAdapter.clear();
-                        topicsAdapter.addAll(response.data);
+                        topicsAdapter.setTopics(response.data);
                     }
                 },
                 new Response.ErrorListener() {

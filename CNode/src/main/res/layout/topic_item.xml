@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true">
 
     <ImageView
         android:id="@+id/avatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:background="#10000000" />
 
     <TextView
         android:id="@+id/title"
@@ -18,9 +21,9 @@
         android:layout_marginTop="16dp"
         android:layout_toEndOf="@+id/avatar"
         android:layout_toRightOf="@+id/avatar"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textSize="16sp" />
+        android:text="标题"
+        android:textColor="@color/abc_primary_text_material_light"
+        android:textSize="@dimen/abc_text_size_body_1_material" />
 
     <TextView
         android:id="@+id/user"
@@ -30,9 +33,12 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginTop="4dp"
         android:layout_toEndOf="@+id/avatar"
         android:layout_toRightOf="@+id/avatar"
         android:ellipsize="end"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:text="用户名"
+        android:textColor="@color/abc_secondary_text_material_light" />
 
 </RelativeLayout>
