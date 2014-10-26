@@ -32,7 +32,7 @@
         android:text="用户名"
         android:textColor="@color/abc_secondary_text_material_light" />
 
-    <TextView
+    <org.cnodejs.html.HtmlView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

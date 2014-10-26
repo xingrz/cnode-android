@@ -9,9 +9,7 @@ import org.cnodejs.BuildConfig;
 public class ImageLoader {
 
     public static void load(ImageView view, String url) {
-        if (url.startsWith("//")) {
-            url = "https:" + url;
-        }
+        url = normalizeUrl(url);
 
         // TODO: 暂时的 workaround， 未做仔细处理
         // 将 Gravatar 默认的 48x48 替换成 120x120（按我们的 ImageView 大小是 40dp，xxhdpi 分辨率计算）
@@ -22,6 +20,14 @@ public class ImageLoader {
         Picasso picasso = Picasso.with(view.getContext());
         picasso.setLoggingEnabled(BuildConfig.DEBUG);
         picasso.load(url).into(view);
+    }
+
+    public static String normalizeUrl(String url) {
+        if (url.startsWith("//")) {
+            url = "https:" + url;
+        }
+
+        return url;
     }
 
 }

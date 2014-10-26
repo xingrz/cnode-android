@@ -11,7 +11,8 @@ import android.widget.TextView;
 import org.cnodejs.api.model.Reply;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.util.ImageLoader;
-import org.cnodejs.util.Markdown;
+import org.cnodejs.util.TextRenderer;
+import org.cnodejs.html.HtmlView;
 
 public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapter.ViewHolder> {
 
@@ -19,14 +20,14 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
         public ImageView avatar;
         public TextView user;
         public TextView title;
-        public TextView content;
+        public HtmlView content;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.avatar = (ImageView) itemView.findViewById(R.id.avatar);
             this.user = (TextView) itemView.findViewById(R.id.user);
             this.title = (TextView) itemView.findViewById(R.id.title);
-            this.content = (TextView) itemView.findViewById(R.id.content);
+            this.content = (HtmlView) itemView.findViewById(R.id.content);
         }
     }
 
@@ -64,12 +65,12 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
             case VIEW_TYPE_HEADER:
                 holder.user.setText(topic.author.loginname);
                 holder.title.setText(topic.title);
-                Markdown.render(holder.content, topic.content);
+                TextRenderer.render(holder.content, topic.content);
                 break;
             case VIEW_TYPE_REPLY:
                 Reply item = topic.replies.get(position - 1);
                 holder.user.setText(item.author.loginname);
-                Markdown.render(holder.content, item.content);
+                TextRenderer.render(holder.content, item.content);
                 ImageLoader.load(holder.avatar, item.author.avatarUrl);
                 break;
         }
