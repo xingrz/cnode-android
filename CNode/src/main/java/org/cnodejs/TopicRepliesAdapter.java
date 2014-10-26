@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,14 +21,14 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
         public ImageView avatar;
         public TextView user;
         public TextView title;
-        public HtmlView content;
+        public WebView content;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.avatar = (ImageView) itemView.findViewById(R.id.avatar);
             this.user = (TextView) itemView.findViewById(R.id.user);
             this.title = (TextView) itemView.findViewById(R.id.title);
-            this.content = (HtmlView) itemView.findViewById(R.id.content);
+            this.content = (WebView) itemView.findViewById(R.id.content);
         }
     }
 
@@ -65,12 +66,12 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
             case VIEW_TYPE_HEADER:
                 holder.user.setText(topic.author.loginname);
                 holder.title.setText(topic.title);
-                TextRenderer.render(holder.content, topic.content);
+                holder.content.loadData(topic.content, "text/html", "utf8");
                 break;
             case VIEW_TYPE_REPLY:
                 Reply item = topic.replies.get(position - 1);
                 holder.user.setText(item.author.loginname);
-                TextRenderer.render(holder.content, item.content);
+                holder.content.loadData(item.content, "text/html", "utf8");
                 ImageLoader.load(holder.avatar, item.author.avatarUrl);
                 break;
         }
@@ -81,6 +82,10 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_REPLY:
                 holder.avatar.setImageBitmap(null);
+                holder.content.loadData("", "text/html", null);
+                break;
+            case VIEW_TYPE_HEADER:
+                holder.content.loadData("", "text/html", null);
                 break;
         }
     }
