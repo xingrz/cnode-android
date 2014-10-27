@@ -2,10 +2,11 @@
 <resources>
 
     <string name="loading">正在加载…</string>
+    <string name="no_update">没有更新</string>
 
     <string name="error_loading">加载失败，请稍后再试。</string>
 
-    <string name="action_about">关于…</string>
-    <string name="action_open_in_browser">在浏览器中打开…</string>
+    <string name="action_about">关于</string>
+    <string name="action_open_in_browser">在浏览器中打开</string>
 
 </resources>

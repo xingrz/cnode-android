@@ -13,10 +13,11 @@ import com.squareup.picasso.Picasso;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
 import org.cnodejs.util.ImageLoader;
+import org.cnodejs.widget.ArrayRecyclerAdapter;
 
 import java.util.List;
 
-public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.ViewHolder> {
+public class TopicListAdapter extends ArrayRecyclerAdapter<Topic, TopicListAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView avatar;
@@ -38,16 +39,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
     private final LayoutInflater inflater;
     private final OnItemClickListener listener;
 
-    private List<Topic> topics;
-
     public TopicListAdapter(Context context, OnItemClickListener listener) {
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -57,7 +51,7 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Topic item = topics.get(position);
+        final Topic item = get(position);
 
         holder.title.setText(item.title);
         holder.user.setText(item.author.loginname);
@@ -75,11 +69,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.avatar.setImageBitmap(null);
-    }
-
-    @Override
-    public int getItemCount() {
-        return topics == null ? 0 : topics.size();
     }
 
 }

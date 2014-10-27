@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -64,6 +65,7 @@ public class MainActivity extends ActionBarActivity implements
 
         RecyclerView topicsView = (RecyclerView) findViewById(R.id.topics);
         topicsView.setLayoutManager(new LinearLayoutManager(this));
+        topicsView.setItemAnimator(new DefaultItemAnimator());
         topicsView.setAdapter(topicsAdapter);
     }
 
@@ -76,7 +78,15 @@ public class MainActivity extends ActionBarActivity implements
                     public void onResponse(TopicList response) {
                         Log.d(TAG, "loaded " + response.data.size() + " topics");
                         swipingLayout.setRefreshing(false);
-                        topicsAdapter.setTopics(response.data);
+                        if (topicsAdapter.equals(response.data)) {
+                            Toast.makeText(
+                                    MainActivity.this,
+                                    R.string.no_update,
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            topicsAdapter.clear();
+                            topicsAdapter.addAll(response.data);
+                        }
                     }
                 },
                 new Response.ErrorListener() {
