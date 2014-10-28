@@ -1,5 +1,8 @@
 package org.cnodejs;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -15,11 +18,10 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
-import org.cnodejs.api.Constants;
+import org.cnodejs.account.AccountAuthenticator;
 import org.cnodejs.api.GsonRequest;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
@@ -28,6 +30,8 @@ public class MainActivity extends ActionBarActivity implements
         SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "MainActivity";
+
+    private AccountManager accountManager;
 
     private SwipeRefreshLayout swipingLayout;
 
@@ -41,13 +45,16 @@ public class MainActivity extends ActionBarActivity implements
 
         setContentView(R.layout.activity_main);
 
+        accountManager = AccountManager.get(this);
+
         setupSwipingLayout();
         setupTopicsView();
 
         // 初始化 Volley 请求队列
         queue = Volley.newRequestQueue(this);
 
-        loadTopics();
+        swipingLayout.setRefreshing(true);
+        topicsLoader.enqueue(queue);
     }
 
     private void setupSwipingLayout() {
@@ -69,43 +76,32 @@ public class MainActivity extends ActionBarActivity implements
         topicsView.setAdapter(topicsAdapter);
     }
 
-    private void loadTopics() {
-        swipingLayout.setRefreshing(true);
-        queue.add(new GsonRequest<TopicList>(
-                Request.Method.GET, Constants.API_V1 + "/topics", TopicList.class,
-                new Response.Listener<TopicList>() {
-                    @Override
-                    public void onResponse(TopicList response) {
-                        Log.d(TAG, "loaded " + response.data.size() + " topics");
-                        swipingLayout.setRefreshing(false);
-                        if (topicsAdapter.equals(response.data)) {
-                            Toast.makeText(
-                                    MainActivity.this,
-                                    R.string.no_update,
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            topicsAdapter.clear();
-                            topicsAdapter.addAll(response.data);
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "error loading topics", error);
-                        swipingLayout.setRefreshing(false);
-                        Toast.makeText(
-                                MainActivity.this,
-                                R.string.error_loading,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-        ));
-    }
+    private final GsonRequest<TopicList> topicsLoader
+            = new GsonRequest<TopicList>(Request.Method.GET, TopicList.class, "/topics") {
+        @Override
+        protected void deliverResponse(TopicList response) {
+            Log.d(TAG, "loaded " + response.data.size() + " topics");
+            swipingLayout.setRefreshing(false);
+            if (topicsAdapter.equals(response.data)) {
+                Toast.makeText(MainActivity.this, R.string.no_update, Toast.LENGTH_SHORT).show();
+            } else {
+                topicsAdapter.clear();
+                topicsAdapter.addAll(response.data);
+            }
+        }
+
+        @Override
+        public void deliverError(VolleyError error) {
+            Log.e(TAG, "error loading topics", error);
+            swipingLayout.setRefreshing(false);
+            Toast.makeText(MainActivity.this, R.string.error_loading, Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public void onRefresh() {
-        loadTopics();
+        swipingLayout.setRefreshing(true);
+        topicsLoader.enqueue(queue);
     }
 
     private void openTopic(Topic topic) {
@@ -130,6 +126,9 @@ public class MainActivity extends ActionBarActivity implements
             case R.id.about:
                 openAbout();
                 return true;
+            case R.id.signin:
+                signIn();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -138,6 +137,16 @@ public class MainActivity extends ActionBarActivity implements
     private void openAbout() {
         String homepage = "https://github.com/xingrz/cnode-android";
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(homepage)));
+    }
+
+    private void signIn() {
+        accountManager.addAccount(AccountAuthenticator.ACCOUNT_TYPE, null, null, null, this,
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        Log.d(TAG, String.valueOf(future.isDone()));
+                    }
+                }, null);
     }
 
 }
