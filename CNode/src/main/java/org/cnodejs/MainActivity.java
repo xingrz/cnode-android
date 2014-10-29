@@ -6,7 +6,9 @@ import android.accounts.AccountManagerFuture;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,6 +35,7 @@ public class MainActivity extends ActionBarActivity implements
 
     private AccountManager accountManager;
 
+    private ActionBar actionBar;
     private SwipeRefreshLayout swipingLayout;
 
     private TopicListAdapter topicsAdapter;
@@ -43,18 +46,44 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        queue = Volley.newRequestQueue(this);
+
+        actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
         setContentView(R.layout.activity_main);
 
         accountManager = AccountManager.get(this);
 
         setupSwipingLayout();
         setupTopicsView();
+        setupTabs(actionBar);
+    }
 
-        // 初始化 Volley 请求队列
-        queue = Volley.newRequestQueue(this);
+    private final ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+        @Override
+        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+            load();
+        }
 
-        swipingLayout.setRefreshing(true);
-        topicsLoader.enqueue(queue);
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        }
+
+        @Override
+        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        }
+    };
+
+    private void setupTabs(ActionBar actionBar) {
+        createTab(actionBar, R.string.tab_all, "all");
+        createTab(actionBar, R.string.tab_share, "share");
+        createTab(actionBar, R.string.tab_ask, "ask");
+        createTab(actionBar, R.string.tab_job, "job");
+    }
+
+    private void createTab(ActionBar actionBar, int title, String tab) {
+        actionBar.addTab(actionBar.newTab().setText(title).setTag(tab).setTabListener(tabListener));
     }
 
     private void setupSwipingLayout() {
@@ -76,32 +105,37 @@ public class MainActivity extends ActionBarActivity implements
         topicsView.setAdapter(topicsAdapter);
     }
 
-    private final GsonRequest<TopicList> topicsLoader
-            = new GsonRequest<TopicList>(Request.Method.GET, TopicList.class, "/topics") {
-        @Override
-        protected void deliverResponse(TopicList response) {
-            Log.d(TAG, "loaded " + response.data.size() + " topics");
-            swipingLayout.setRefreshing(false);
-            if (topicsAdapter.equals(response.data)) {
-                Toast.makeText(MainActivity.this, R.string.no_update, Toast.LENGTH_SHORT).show();
-            } else {
-                topicsAdapter.clear();
-                topicsAdapter.addAll(response.data);
-            }
-        }
+    private void load() {
+        ActionBar.Tab selected =  actionBar.getSelectedTab();
+        String tab = selected == null ? "all" : (String) selected.getTag();
 
-        @Override
-        public void deliverError(VolleyError error) {
-            Log.e(TAG, "error loading topics", error);
-            swipingLayout.setRefreshing(false);
-            Toast.makeText(MainActivity.this, R.string.error_loading, Toast.LENGTH_SHORT).show();
-        }
-    };
+        swipingLayout.setRefreshing(true);
+
+        new GsonRequest<TopicList>(Request.Method.GET, TopicList.class, "/topics?tab=%s", tab) {
+            @Override
+            protected void deliverResponse(TopicList response) {
+                Log.d(TAG, "loaded " + response.data.size() + " topics");
+                swipingLayout.setRefreshing(false);
+                if (topicsAdapter.equals(response.data)) {
+                    Toast.makeText(MainActivity.this, R.string.no_update, Toast.LENGTH_SHORT).show();
+                } else {
+                    topicsAdapter.clear();
+                    topicsAdapter.addAll(response.data);
+                }
+            }
+
+            @Override
+            public void deliverError(VolleyError error) {
+                Log.e(TAG, "error loading topics", error);
+                swipingLayout.setRefreshing(false);
+                Toast.makeText(MainActivity.this, R.string.error_loading, Toast.LENGTH_SHORT).show();
+            }
+        }.enqueue(queue);
+    }
 
     @Override
     public void onRefresh() {
-        swipingLayout.setRefreshing(true);
-        topicsLoader.enqueue(queue);
+        load();
     }
 
     private void openTopic(Topic topic) {

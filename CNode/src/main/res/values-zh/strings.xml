@@ -10,4 +10,9 @@
     <string name="action_signin">登录</string>
     <string name="action_open_in_browser">在浏览器中打开</string>
 
+    <string name="tab_all">全部</string>
+    <string name="tab_share">分享</string>
+    <string name="tab_ask">问答</string>
+    <string name="tab_job">招聘</string>
+
 </resources>

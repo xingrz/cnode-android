@@ -12,4 +12,9 @@
     <string name="action_signin">Sign in</string>
     <string name="action_open_in_browser">Open in Browser</string>
 
+    <string name="tab_all">All</string>
+    <string name="tab_share">Share</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_job">Job</string>
+
 </resources>
