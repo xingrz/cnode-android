@@ -23,12 +23,14 @@ public class TopicListAdapter extends ArrayRecyclerAdapter<Topic, TopicListAdapt
         public ImageView avatar;
         public TextView title;
         public TextView user;
+        public TextView tab;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.avatar = (ImageView) itemView.findViewById(R.id.avatar);
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.user = (TextView) itemView.findViewById(R.id.user);
+            this.tab = (TextView) itemView.findViewById(R.id.tab);
         }
     }
 
@@ -57,6 +59,16 @@ public class TopicListAdapter extends ArrayRecyclerAdapter<Topic, TopicListAdapt
         holder.user.setText(item.author.loginname);
 
         ImageLoader.load(holder.avatar, item.author.avatarUrl);
+
+        if ("share".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_share);
+        } else if ("ask".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_ask);
+        } else if ("job".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_job);
+        } else {
+            holder.tab.setText(item.tab);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

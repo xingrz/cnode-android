@@ -3,19 +3,30 @@ package org.cnodejs;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -35,7 +46,7 @@ public class MainActivity extends ActionBarActivity implements
 
     private AccountManager accountManager;
 
-    private ActionBar actionBar;
+    private Spinner filter;
     private SwipeRefreshLayout swipingLayout;
 
     private TopicListAdapter topicsAdapter;
@@ -46,44 +57,21 @@ public class MainActivity extends ActionBarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        queue = Volley.newRequestQueue(this);
-
-        actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
         setContentView(R.layout.activity_main);
+
+        queue = Volley.newRequestQueue(this);
 
         accountManager = AccountManager.get(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
         setupSwipingLayout();
         setupTopicsView();
-        setupTabs(actionBar);
-    }
+        setupFilter();
 
-    private final ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-        @Override
-        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-            load();
-        }
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        }
-
-        @Override
-        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        }
-    };
-
-    private void setupTabs(ActionBar actionBar) {
-        createTab(actionBar, R.string.tab_all, "all");
-        createTab(actionBar, R.string.tab_share, "share");
-        createTab(actionBar, R.string.tab_ask, "ask");
-        createTab(actionBar, R.string.tab_job, "job");
-    }
-
-    private void createTab(ActionBar actionBar, int title, String tab) {
-        actionBar.addTab(actionBar.newTab().setText(title).setTag(tab).setTabListener(tabListener));
+        load();
     }
 
     private void setupSwipingLayout() {
@@ -105,9 +93,39 @@ public class MainActivity extends ActionBarActivity implements
         topicsView.setAdapter(topicsAdapter);
     }
 
+    private void setupFilter() {
+        filter = (Spinner) findViewById(R.id.filter);
+
+        filter.setAdapter(ArrayAdapter.createFromResource(
+                this, R.array.tabs,
+                android.R.layout.simple_spinner_dropdown_item
+        ));
+
+        filter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                load();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
     private void load() {
-        ActionBar.Tab selected =  actionBar.getSelectedTab();
-        String tab = selected == null ? "all" : (String) selected.getTag();
+        String tab = "all";
+        switch (filter.getSelectedItemPosition()) {
+            case 1:
+                tab = "share";
+                break;
+            case 2:
+                tab = "ask";
+                break;
+            case 3:
+                tab = "job";
+                break;
+        }
 
         swipingLayout.setRefreshing(true);
 
