@@ -1,5 +1,7 @@
-CNode Android [![build status][travis-image]][travis-url] [![latest release][release-image]][release-url] [![issues][issues-image]][issues-url]
+CNode Android
 ==========
+
+[![build status][travis-image]][travis-url] [![latest release][release-image]][release-url] [![issues][issues-image]][issues-url]
 
 [travis-image]: https://img.shields.io/travis/xingrz/cnode-android.svg?style=flat-square
 [travis-url]: https://travis-ci.org/xingrz/cnode-android
