@@ -16,6 +16,10 @@ public class ImageLoader {
         if (url.contains("gravatar.com") && url.contains("size=48")) {
             url = url.replace("size=48", "size=120");
         }
+        // 将 GitHub 默认的 40x40 替换成 120x120
+        if (url.contains("avatars.githubusercontent.com") && url.contains("s=40")) {
+            url = url.replace("s=40", "s=120");
+        }
 
         Picasso picasso = Picasso.with(view.getContext());
         picasso.setLoggingEnabled(BuildConfig.DEBUG);

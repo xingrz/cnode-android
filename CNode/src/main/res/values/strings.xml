@@ -4,10 +4,27 @@
     <string name="app_name" translatable="false">CNode</string>
 
     <string name="loading">Loading…</string>
+    <string name="no_update">Nothing changed</string>
 
     <string name="error_loading">Failed to load. Try again later.</string>
 
-    <string name="action_about">About…</string>
-    <string name="action_open_in_browser">Open in Browser…</string>
+    <string name="action_about">About</string>
+    <string name="action_signin">Sign in</string>
+    <string name="action_open_in_browser">Open in Browser</string>
+
+    <string name="drawer_opened" translatable="false" />
+    <string name="drawer_closed" translatable="false" />
+
+    <string name="tab_all">All</string>
+    <string name="tab_share">Share</string>
+    <string name="tab_ask">Ask</string>
+    <string name="tab_job">Job</string>
+
+    <string-array name="tabs">
+        <item>@string/tab_all</item>
+        <item>@string/tab_share</item>
+        <item>@string/tab_ask</item>
+        <item>@string/tab_job</item>
+    </string-array>
 
 </resources>

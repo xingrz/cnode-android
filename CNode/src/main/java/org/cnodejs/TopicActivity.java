@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
@@ -45,25 +44,19 @@ public class TopicActivity extends ActionBarActivity {
 
         String id = getIntent().getStringExtra("id");
 
-        Volley.newRequestQueue(this).add(new GsonRequest<TopicContent>(
-                Request.Method.GET, Constants.API_V1 + "/topic/" + id, TopicContent.class,
-                new Response.Listener<TopicContent>() {
-                    @Override
-                    public void onResponse(TopicContent response) {
-                        repliesAdapter.setTopic(response.data);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "error loading replies", error);
-                        Toast.makeText(
-                                TopicActivity.this,
-                                R.string.error_loading,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-        ));
+        new GsonRequest<TopicContent>(
+                Request.Method.GET, TopicContent.class, "/topic/%s", id) {
+            @Override
+            protected void deliverResponse(TopicContent response) {
+                repliesAdapter.setTopic(response.data);
+            }
+
+            @Override
+            public void deliverError(VolleyError error) {
+                Log.e(TAG, "error loading replies", error);
+                Toast.makeText(TopicActivity.this, R.string.error_loading, Toast.LENGTH_SHORT).show();
+            }
+        }.enqueue(Volley.newRequestQueue(this));
     }
 
     @Override

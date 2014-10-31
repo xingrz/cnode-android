@@ -13,21 +13,24 @@ import com.squareup.picasso.Picasso;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
 import org.cnodejs.util.ImageLoader;
+import org.cnodejs.widget.ArrayRecyclerAdapter;
 
 import java.util.List;
 
-public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.ViewHolder> {
+public class TopicListAdapter extends ArrayRecyclerAdapter<Topic, TopicListAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView avatar;
         public TextView title;
         public TextView user;
+        public TextView tab;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.avatar = (ImageView) itemView.findViewById(R.id.avatar);
             this.title = (TextView) itemView.findViewById(R.id.title);
             this.user = (TextView) itemView.findViewById(R.id.user);
+            this.tab = (TextView) itemView.findViewById(R.id.tab);
         }
     }
 
@@ -38,16 +41,9 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
     private final LayoutInflater inflater;
     private final OnItemClickListener listener;
 
-    private List<Topic> topics;
-
     public TopicListAdapter(Context context, OnItemClickListener listener) {
         this.inflater = LayoutInflater.from(context);
         this.listener = listener;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
-        notifyDataSetChanged();
     }
 
     @Override
@@ -57,12 +53,22 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        final Topic item = topics.get(position);
+        final Topic item = get(position);
 
         holder.title.setText(item.title);
         holder.user.setText(item.author.loginname);
 
         ImageLoader.load(holder.avatar, item.author.avatarUrl);
+
+        if ("share".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_share);
+        } else if ("ask".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_ask);
+        } else if ("job".equals(item.tab)) {
+            holder.tab.setText(R.string.tab_job);
+        } else {
+            holder.tab.setText(item.tab);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,11 +81,6 @@ public class TopicListAdapter extends RecyclerView.Adapter<TopicListAdapter.View
     @Override
     public void onViewRecycled(ViewHolder holder) {
         holder.avatar.setImageBitmap(null);
-    }
-
-    @Override
-    public int getItemCount() {
-        return topics == null ? 0 : topics.size();
     }
 
 }

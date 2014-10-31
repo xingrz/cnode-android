@@ -17,4 +17,9 @@ public class User {
 
     public List<Topic> recentTopics;
 
+    @Override
+    public boolean equals(Object o) {
+        return o != null && (o instanceof User) && ((User) o).loginname.equals(loginname);
+    }
+
 }

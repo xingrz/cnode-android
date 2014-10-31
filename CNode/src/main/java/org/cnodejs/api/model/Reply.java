@@ -12,4 +12,9 @@ public class Reply {
 
     public Date createAt;
 
+    @Override
+    public boolean equals(Object o) {
+        return o != null && (o instanceof Reply) && ((Reply) o).id.equals(id);
+    }
+
 }

@@ -1,24 +1,40 @@
 package org.cnodejs;
 
+import android.accounts.AccountManager;
+import android.accounts.AccountManagerCallback;
+import android.accounts.AccountManagerFuture;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
-import org.cnodejs.api.Constants;
+import org.cnodejs.account.AccountAuthenticator;
 import org.cnodejs.api.GsonRequest;
 import org.cnodejs.api.model.Topic;
 import org.cnodejs.api.model.TopicList;
@@ -28,6 +44,9 @@ public class MainActivity extends ActionBarActivity implements
 
     private static final String TAG = "MainActivity";
 
+    private AccountManager accountManager;
+
+    private Spinner filter;
     private SwipeRefreshLayout swipingLayout;
 
     private TopicListAdapter topicsAdapter;
@@ -40,13 +59,19 @@ public class MainActivity extends ActionBarActivity implements
 
         setContentView(R.layout.activity_main);
 
-        setupSwipingLayout();
-        setupTopicsView();
-
-        // 初始化 Volley 请求队列
         queue = Volley.newRequestQueue(this);
 
-        loadTopics();
+        accountManager = AccountManager.get(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
+        setSupportActionBar(toolbar);
+
+        setupSwipingLayout();
+        setupTopicsView();
+        setupFilter();
+
+        load();
     }
 
     private void setupSwipingLayout() {
@@ -64,38 +89,71 @@ public class MainActivity extends ActionBarActivity implements
 
         RecyclerView topicsView = (RecyclerView) findViewById(R.id.topics);
         topicsView.setLayoutManager(new LinearLayoutManager(this));
+        topicsView.setItemAnimator(new DefaultItemAnimator());
         topicsView.setAdapter(topicsAdapter);
     }
 
-    private void loadTopics() {
-        swipingLayout.setRefreshing(true);
-        queue.add(new GsonRequest<TopicList>(
-                Request.Method.GET, Constants.API_V1 + "/topics", TopicList.class,
-                new Response.Listener<TopicList>() {
-                    @Override
-                    public void onResponse(TopicList response) {
-                        Log.d(TAG, "loaded " + response.data.size() + " topics");
-                        swipingLayout.setRefreshing(false);
-                        topicsAdapter.setTopics(response.data);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e(TAG, "error loading topics", error);
-                        swipingLayout.setRefreshing(false);
-                        Toast.makeText(
-                                MainActivity.this,
-                                R.string.error_loading,
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
+    private void setupFilter() {
+        filter = (Spinner) findViewById(R.id.filter);
+
+        filter.setAdapter(ArrayAdapter.createFromResource(
+                this, R.array.tabs,
+                android.R.layout.simple_spinner_dropdown_item
         ));
+
+        filter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                load();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void load() {
+        String tab = "all";
+        switch (filter.getSelectedItemPosition()) {
+            case 1:
+                tab = "share";
+                break;
+            case 2:
+                tab = "ask";
+                break;
+            case 3:
+                tab = "job";
+                break;
+        }
+
+        swipingLayout.setRefreshing(true);
+
+        new GsonRequest<TopicList>(Request.Method.GET, TopicList.class, "/topics?tab=%s", tab) {
+            @Override
+            protected void deliverResponse(TopicList response) {
+                Log.d(TAG, "loaded " + response.data.size() + " topics");
+                swipingLayout.setRefreshing(false);
+                if (topicsAdapter.equals(response.data)) {
+                    Toast.makeText(MainActivity.this, R.string.no_update, Toast.LENGTH_SHORT).show();
+                } else {
+                    topicsAdapter.clear();
+                    topicsAdapter.addAll(response.data);
+                }
+            }
+
+            @Override
+            public void deliverError(VolleyError error) {
+                Log.e(TAG, "error loading topics", error);
+                swipingLayout.setRefreshing(false);
+                Toast.makeText(MainActivity.this, R.string.error_loading, Toast.LENGTH_SHORT).show();
+            }
+        }.enqueue(queue);
     }
 
     @Override
     public void onRefresh() {
-        loadTopics();
+        load();
     }
 
     private void openTopic(Topic topic) {
@@ -120,6 +178,9 @@ public class MainActivity extends ActionBarActivity implements
             case R.id.about:
                 openAbout();
                 return true;
+            case R.id.signin:
+                signIn();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -128,6 +189,16 @@ public class MainActivity extends ActionBarActivity implements
     private void openAbout() {
         String homepage = "https://github.com/xingrz/cnode-android";
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(homepage)));
+    }
+
+    private void signIn() {
+        accountManager.addAccount(AccountAuthenticator.ACCOUNT_TYPE, null, null, null, this,
+                new AccountManagerCallback<Bundle>() {
+                    @Override
+                    public void run(AccountManagerFuture<Bundle> future) {
+                        Log.d(TAG, String.valueOf(future.isDone()));
+                    }
+                }, null);
     }
 
 }

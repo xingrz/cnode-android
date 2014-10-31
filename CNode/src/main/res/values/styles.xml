@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
+    </style>
+
+    <style name="AppTheme.ToolbarActivity" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="toolbarStyle">@style/Toolbar</item>
+    </style>
+
+    <style name="Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:minHeight">?attr/actionBarSize</item>
+    </style>
+
+    <style name="Toolbar.Spinner" parent="Widget.AppCompat.Spinner">
+        <!--item name="android:layout_marginLeft">8dp</item-->
+        <item name="android:dropDownWidth">160dp</item>
     </style>
 
 </resources>

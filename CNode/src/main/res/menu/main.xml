@@ -5,4 +5,8 @@
         android:id="@+id/about"
         android:title="@string/action_about" />
 
+    <item
+        android:id="@+id/signin"
+        android:title="@string/action_signin" />
+
 </menu>

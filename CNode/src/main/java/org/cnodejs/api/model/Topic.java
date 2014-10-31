@@ -23,4 +23,9 @@ public class Topic {
 
     public List<Reply> replies;
 
+    @Override
+    public boolean equals(Object o) {
+        return o != null && (o instanceof Topic) && ((Topic) o).id.equals(id);
+    }
+
 }

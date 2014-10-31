@@ -3,6 +3,7 @@ package org.cnodejs.api;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.FieldNamingPolicy;
@@ -13,7 +14,7 @@ import com.google.gson.JsonSyntaxException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
-public class GsonRequest<T> extends Request<T> {
+public abstract class GsonRequest<T> extends Request<T> {
 
     public static final Gson gson = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -21,13 +22,14 @@ public class GsonRequest<T> extends Request<T> {
             .create();
 
     private final Class<T> type;
-    private final Response.Listener<T> listener;
 
-    public GsonRequest(int method, String url, Class<T> type,
-                       Response.Listener<T> listener, Response.ErrorListener errorListener) {
-        super(method, url, errorListener);
+    public GsonRequest(int method, Class<T> type, String url) {
+        super(method, url.startsWith("/") ? Constants.API_V1 + url : url, null);
         this.type = type;
-        this.listener = listener;
+    }
+
+    public GsonRequest(int method, Class<T> type, String url, Object... segments) {
+        this(method, type, String.format(url, segments));
     }
 
     @Override
@@ -46,9 +48,8 @@ public class GsonRequest<T> extends Request<T> {
         }
     }
 
-    @Override
-    protected void deliverResponse(T response) {
-        listener.onResponse(response);
+    public void enqueue(RequestQueue queue) {
+        queue.add(this);
     }
 
 }
