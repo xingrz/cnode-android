@@ -70,8 +70,6 @@ public class MainActivity extends ActionBarActivity implements
         setupSwipingLayout();
         setupTopicsView();
         setupFilter();
-
-        load();
     }
 
     private void setupSwipingLayout() {
@@ -137,8 +135,7 @@ public class MainActivity extends ActionBarActivity implements
                 if (topicsAdapter.equals(response.data)) {
                     Toast.makeText(MainActivity.this, R.string.no_update, Toast.LENGTH_SHORT).show();
                 } else {
-                    topicsAdapter.clear();
-                    topicsAdapter.addAll(response.data);
+                    topicsAdapter.replaceWith(response.data);
                 }
             }
 

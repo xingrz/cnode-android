@@ -10,9 +10,9 @@ import android.widget.TextView;
 
 import org.cnodejs.api.model.Reply;
 import org.cnodejs.api.model.Topic;
+import org.cnodejs.html.HtmlView;
 import org.cnodejs.util.ImageLoader;
 import org.cnodejs.util.TextRenderer;
-import org.cnodejs.html.HtmlView;
 
 public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapter.ViewHolder> {
 

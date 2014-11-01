@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import org.cnodejs.BuildConfig;
+import org.cnodejs.R;
 
 public class ImageLoader {
 
@@ -23,7 +24,7 @@ public class ImageLoader {
 
         Picasso picasso = Picasso.with(view.getContext());
         picasso.setLoggingEnabled(BuildConfig.DEBUG);
-        picasso.load(url).into(view);
+        picasso.load(url).placeholder(R.drawable.image_placeholder).into(view);
     }
 
     public static String normalizeUrl(String url) {
