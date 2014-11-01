@@ -16,10 +16,10 @@ A [CNode](https://cnodejs.org) client for Android.
 ## Prerequisites
 
 - Gradle 2.1
-- JDK 8
-- Android Studio 0.8.13+
+- Oracle JDK 7 (8 is recommended)
 - Android API Platform 21
-- Android SDK Build-tools 21.0.1
+- Android SDK Build-tools 21.1
+- Android Studio 0.9+ (canary build)
 
 
 ## Build
