@@ -70,8 +70,6 @@ public class MainActivity extends ActionBarActivity implements
         setupSwipingLayout();
         setupTopicsView();
         setupFilter();
-
-        load();
     }
 
     private void setupSwipingLayout() {
