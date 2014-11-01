@@ -8,14 +8,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import org.cnodejs.api.model.Topic;
-import org.cnodejs.api.model.TopicList;
 import org.cnodejs.util.ImageLoader;
 import org.cnodejs.widget.ArrayRecyclerAdapter;
-
-import java.util.List;
 
 public class TopicListAdapter extends ArrayRecyclerAdapter<Topic, TopicListAdapter.ViewHolder> {
 
