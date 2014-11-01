@@ -30,6 +30,8 @@
 
         <activity android:name=".TopicActivity" />
 
+        <activity android:name=".ReplyActivity" />
+
         <activity android:name=".account.AccountActivity" />
 
         <service

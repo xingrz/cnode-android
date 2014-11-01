@@ -3,13 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/open_in_browser"
-        android:title="@string/action_open_in_browser" />
-
-    <item
         android:id="@+id/comment"
-        android:icon="@drawable/ic_comment_black_24dp"
-        android:title="Comment"
+        android:icon="@drawable/ic_send_black_24dp"
+        android:title="Send"
         app:showAsAction="always" />
 
 </menu>

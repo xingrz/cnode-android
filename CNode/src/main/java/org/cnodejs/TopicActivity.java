@@ -74,6 +74,9 @@ public class TopicActivity extends ActionBarActivity {
             case R.id.open_in_browser:
                 openInBrowser();
                 return true;
+            case R.id.comment:
+                comment();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -82,6 +85,11 @@ public class TopicActivity extends ActionBarActivity {
     private void openInBrowser() {
         Intent intent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse(Constants.BASE + "/topic/" + getIntent().getStringExtra("id")));
+        startActivity(intent);
+    }
+
+    private void comment() {
+        Intent intent = new Intent(this, ReplyActivity.class);
         startActivity(intent);
     }
 
