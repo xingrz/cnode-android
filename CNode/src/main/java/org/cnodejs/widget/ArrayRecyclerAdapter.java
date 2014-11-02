@@ -44,8 +44,9 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
     @Override
     public boolean add(E object) {
         synchronized (lock) {
+            int lastIndex = list.size();
             if (list.add(object)) {
-                notifyItemInserted(list.size() - 1);
+                notifyItemInserted(lastIndex);
                 return true;
             } else {
                 return false;
@@ -68,8 +69,9 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
     @Override
     public boolean addAll(Collection<? extends E> collection) {
         synchronized (lock) {
+            int lastIndex = list.size();
             if (list.addAll(collection)) {
-                notifyItemRangeInserted(list.size() - 1, collection.size());
+                notifyItemRangeInserted(lastIndex, collection.size());
                 return true;
             } else {
                 return false;
