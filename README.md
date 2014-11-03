@@ -15,17 +15,33 @@ A [CNode](https://cnodejs.org) client for Android.
 
 ## Prerequisites
 
-- Gradle 2.1
+The following is required for developing:
+
 - Oracle JDK 7 (8 is recommended)
+- Android Studio 0.9+ (canary build)
+
+The following SDK components is required for building:
+
 - Android API Platform 21
 - Android SDK Build-tools 21.1
-- Android Studio 0.9+ (canary build)
+- Android Support Repository
+
+You may install these SDK components by:
+
+```sh
+echo y | android update sdk --no-ui --all --filter "tools"
+echo y | android update sdk --no-ui --all --filter "build-tools-21.1.0"
+echo y | android update sdk --no-ui --all --filter "android-21"
+echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"
+```
 
 
 ## Build
 
+Build and generate a debug APK in `./CNode/build/outputs/apk`:
+
 ```sh
-./gradlew assembleRelease
+./gradlew assembleDebug
 ```
 
 
