@@ -12,6 +12,8 @@ import java.util.ListIterator;
 public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements List<E> {
 
+    private final Object lock = new Object();
+
     private final List<E> list;
 
     public ArrayRecyclerAdapter() {
@@ -33,48 +35,58 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
 
     @Override
     public void add(int location, E object) {
-        list.add(location, object);
-        notifyItemInserted(location);
+        synchronized (lock) {
+            list.add(location, object);
+            notifyItemInserted(location);
+        }
     }
 
     @Override
     public boolean add(E object) {
-        if (list.add(object)) {
-            notifyItemInserted(list.size() - 1);
-            return true;
-        } else {
-            return false;
+        synchronized (lock) {
+            int lastIndex = list.size();
+            if (list.add(object)) {
+                notifyItemInserted(lastIndex);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     @Override
     public boolean addAll(int location, Collection<? extends E> collection) {
-        if (list.addAll(location, collection)) {
-            notifyItemRangeInserted(location, collection.size());
-            return true;
-        } else {
-            return false;
+        synchronized (lock) {
+            if (list.addAll(location, collection)) {
+                notifyItemRangeInserted(location, collection.size());
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     @Override
     public boolean addAll(Collection<? extends E> collection) {
-        if (list.addAll(collection)) {
-            notifyItemRangeInserted(list.size() - 1, collection.size());
-            return true;
-        } else {
-            return false;
+        synchronized (lock) {
+            int lastIndex = list.size();
+            if (list.addAll(collection)) {
+                notifyItemRangeInserted(lastIndex, collection.size());
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     @Override
     public void clear() {
-        int size = list.size();
-
-        list.clear();
-
-        if (size > 0) {
-            notifyItemRangeRemoved(0, size);
+        synchronized (lock) {
+            int size = list.size();
+            if (size > 0) {
+                list.clear();
+                notifyItemRangeRemoved(0, size);
+            }
         }
     }
 
@@ -128,19 +140,23 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
 
     @Override
     public E remove(int location) {
-        E item = list.remove(location);
-        notifyItemRemoved(location);
-        return item;
+        synchronized (lock) {
+            E item = list.remove(location);
+            notifyItemRemoved(location);
+            return item;
+        }
     }
 
     @Override
     public boolean remove(Object object) {
-        int index = list.indexOf(object);
-        if (list.remove(object)) {
-            notifyItemRemoved(index);
-            return true;
-        } else {
-            return false;
+        synchronized (lock) {
+            int index = indexOf(object);
+            if (list.remove(object)) {
+                notifyItemRemoved(index);
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
@@ -152,9 +168,12 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
         while (iterator.hasNext()) {
             Object object = iterator.next();
             if (collection.contains(object)) {
-                int index = list.indexOf(object);
-                iterator.remove();
-                notifyItemRemoved(index);
+                synchronized (lock) {
+                    int index = indexOf(object);
+                    iterator.remove();
+                    notifyItemRemoved(index);
+                }
+
                 modified = true;
             }
         }
@@ -170,9 +189,12 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
         while (iterator.hasNext()) {
             Object object = iterator.next();
             if (!collection.contains(object)) {
-                int index = list.indexOf(object);
-                iterator.remove();
-                notifyItemRemoved(index);
+                synchronized (lock) {
+                    int index = indexOf(object);
+                    iterator.remove();
+                    notifyItemRemoved(index);
+                }
+
                 modified = true;
             }
         }
@@ -182,9 +204,11 @@ public abstract class ArrayRecyclerAdapter<E, VH extends RecyclerView.ViewHolder
 
     @Override
     public E set(int location, E object) {
-        E origin = list.set(location, object);
-        notifyItemChanged(location);
-        return origin;
+        synchronized (lock) {
+            E origin = list.set(location, object);
+            notifyItemChanged(location);
+            return origin;
+        }
     }
 
     @Override
