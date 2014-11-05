@@ -29,7 +29,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private void handleUl(boolean opening, Editable output) {
         if (opening) {
             hierarchy.addFirst(new Tag("ul"));
-            if (output.charAt(output.length() - 1) != '\n') {
+            if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                 output.append("\n");
             }
             indent++;
@@ -42,7 +42,7 @@ public class HtmlTagHandler implements Html.TagHandler {
     private void handleOl(boolean opening, Editable output) {
         if (opening) {
             hierarchy.addFirst(new Tag("ol"));
-            if (output.charAt(output.length() - 1) != '\n') {
+            if (output.length() > 0 && output.charAt(output.length() - 1) != '\n') {
                 output.append("\n");
             }
             indent++;
