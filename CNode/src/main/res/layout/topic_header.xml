@@ -12,7 +12,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:text="我是标题"
         android:textColor="@color/abc_primary_text_material_light"
         android:textSize="@dimen/abc_text_size_headline_material" />
