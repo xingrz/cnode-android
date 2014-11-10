@@ -34,11 +34,11 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
 
     // API requesting and JSON parsing
-    compile 'com.mcxiaoke.volley:library:1.0.6'
+    compile 'com.mcxiaoke.volley:library:1.0.8'
     compile 'com.google.code.gson:gson:2.3'
 
     // image loading
-    compile 'com.squareup.picasso:picasso:2.3.4'
+    compile 'com.squareup.picasso:picasso:2.4.0'
 
     // QR code scanning
     compile 'com.google.zxing:core:3.1.0'
