@@ -33,6 +33,7 @@ public class TopicActivity extends ActionBarActivity {
 
     private View firstItemView;
     private float transHeight;
+    private float lastScrolled;
 
     private TopicRepliesAdapter repliesAdapter;
 
@@ -118,6 +119,7 @@ public class TopicActivity extends ActionBarActivity {
         transHeight = title.getTop() + title.getHeight();
     }
 
+    // TODO: 需要封装
     private void handleScroll() {
         if (firstItemView == null || transHeight == 0) {
             initScroll();
@@ -139,6 +141,24 @@ public class TopicActivity extends ActionBarActivity {
         } else {
             toolbar.setTitleTextColor(Color.BLACK);
         }
+
+        // TODO: 修复当第一项滚出去之后就不起作用的 BUG
+        float scrollDelta = lastScrolled - scrolled;
+        if (scrolled >= transHeight || scrollDelta > 0) {
+            float y = toolbar.getY() + scrollDelta;
+
+            if (y > 0) {
+                y = 0;
+            }
+
+            if (y < -toolbar.getHeight()) {
+                y = -toolbar.getHeight();
+            }
+
+            toolbar.setY(y);
+        }
+
+        lastScrolled = scrolled;
     }
 
     private void openInBrowser() {
