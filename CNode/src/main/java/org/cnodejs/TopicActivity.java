@@ -31,9 +31,8 @@ public class TopicActivity extends ActionBarActivity {
     private Toolbar toolbar;
     private int[] primary = new int[3];
 
-    private View firstItemView;
     private float transHeight;
-    private float lastScrolled;
+    private float scrolled;
 
     private TopicRepliesAdapter repliesAdapter;
 
@@ -62,7 +61,7 @@ public class TopicActivity extends ActionBarActivity {
         repliesView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                handleScroll();
+                handleScroll(dy);
             }
         });
 
@@ -105,31 +104,30 @@ public class TopicActivity extends ActionBarActivity {
         }
     }
 
-    private void initScroll() {
-        TopicRepliesAdapter.ViewHolder holder
-                = (TopicRepliesAdapter.ViewHolder) repliesView.findViewHolderForPosition(0);
-
-        if (holder == null) {
-            return;
-        }
-
-        firstItemView = holder.itemView;
-
-        View title = holder.title;
-        transHeight = title.getTop() + title.getHeight();
-    }
-
     // TODO: 需要封装
-    private void handleScroll() {
-        if (firstItemView == null || transHeight == 0) {
-            initScroll();
+    private void handleScroll(int delta) {
+        if (transHeight == 0) {
+            TopicRepliesAdapter.ViewHolder holder
+                    = (TopicRepliesAdapter.ViewHolder) repliesView.findViewHolderForPosition(0);
+
+            if (holder == null) {
+                return;
+            }
+
+            View title = holder.title;
+            transHeight = title.getTop() + title.getHeight();
+
             return;
         }
 
-        float scrolled = firstItemView.getTop() * -1;
+        scrolled += delta;
+        if (scrolled < 0) {
+            scrolled = 0;
+        }
+
         if (scrolled < transHeight) {
             toolbar.setBackgroundColor(color(scrolled / transHeight));
-        } else {
+        } else if (scrolled >= 0) {
             toolbar.setBackgroundColor(color(1));
         }
 
@@ -142,10 +140,8 @@ public class TopicActivity extends ActionBarActivity {
             toolbar.setTitleTextColor(Color.BLACK);
         }
 
-        // TODO: 修复当第一项滚出去之后就不起作用的 BUG
-        float scrollDelta = lastScrolled - scrolled;
-        if (scrolled >= transHeight || scrollDelta > 0) {
-            float y = toolbar.getY() + scrollDelta;
+        if (scrolled >= transHeight || delta < 0) {
+            float y = toolbar.getY() - delta / 2;
 
             if (y > 0) {
                 y = 0;
@@ -157,8 +153,6 @@ public class TopicActivity extends ActionBarActivity {
 
             toolbar.setY(y);
         }
-
-        lastScrolled = scrolled;
     }
 
     private void openInBrowser() {
