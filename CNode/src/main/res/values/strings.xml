@@ -27,4 +27,25 @@
         <item>@string/tab_job</item>
     </string-array>
 
+    <string name="topic_style" translatable="false"><![CDATA[
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .markdown-text {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        p {
+            color: red;
+        }
+    ]]></string>
+
 </resources>

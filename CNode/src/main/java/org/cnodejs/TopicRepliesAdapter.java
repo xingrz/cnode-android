@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.cnodejs.api.model.Reply;
 import org.cnodejs.api.model.Topic;
+import org.cnodejs.util.HtmlLoader;
 import org.cnodejs.util.ImageLoader;
 
 public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapter.ViewHolder> {
@@ -64,12 +65,12 @@ public class TopicRepliesAdapter extends RecyclerView.Adapter<TopicRepliesAdapte
             case VIEW_TYPE_HEADER:
                 holder.user.setText(topic.author.loginname);
                 holder.title.setText(topic.title);
-                holder.content.loadData(topic.content, "text/html", "utf8");
+                HtmlLoader.load(holder.content, topic.content);
                 break;
             case VIEW_TYPE_REPLY:
                 Reply item = topic.replies.get(position - 1);
                 holder.user.setText(item.author.loginname);
-                holder.content.loadData(item.content, "text/html", "utf8");
+                HtmlLoader.load(holder.content, item.content);
                 ImageLoader.load(holder.avatar, item.author.avatarUrl);
                 break;
         }
